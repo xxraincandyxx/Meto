@@ -2,7 +2,7 @@
 set -eu
 cd "$(dirname "$0")"
 if [ "$(uname -s)" != Darwin ]; then
-    echo "Metal Lab requires macOS with a Metal-capable GPU." >&2
+    echo "Meto requires macOS with a Metal-capable GPU." >&2
     exit 1
 fi
 
@@ -13,13 +13,13 @@ if [ "${1:-}" = setup ]; then
         uv pip install --python .build/catalog-env/bin/python -r Tools/requirements.txt
     else
         if ! command -v "${PYTHON:-python3.13}" >/dev/null 2>&1; then
-            echo "Install uv or Python 3.13, then rerun ./metal-lab setup. See README.md." >&2
+            echo "Install uv or Python 3.13, then rerun ./meto setup. See README.md." >&2
             exit 1
         fi
         "${PYTHON:-python3.13}" -m venv .build/catalog-env
         .build/catalog-env/bin/python -m pip install -r Tools/requirements.txt
     fi
-    exec ./metal-lab doctor
+    exec ./meto doctor
 fi
 
 native() {
@@ -27,12 +27,12 @@ native() {
         echo "Install Apple's Command Line Tools with xcode-select --install, then retry." >&2
         exit 1
     fi
-    make -s .build/metal-lab
-    .build/metal-lab "$@"
+    make -s .build/meto
+    .build/meto "$@"
 }
 catalog() {
     if [ ! -x .build/catalog-env/bin/python ]; then
-        echo "Run ./metal-lab setup once to prepare the extended catalog." >&2
+        echo "Run ./meto setup once to prepare the extended catalog." >&2
         exit 1
     fi
     .build/catalog-env/bin/python Tools/catalog.py "$@"
@@ -61,18 +61,18 @@ case "${1:-help}" in
             .build/catalog-env/bin/python -c 'import torch; print(f"Catalog backend: PyTorch {torch.__version__}, MPS available: {torch.backends.mps.is_available()}"); raise SystemExit(not torch.backends.mps.is_available())'
         fi ;;
     help|--help|-h) cat <<'HELP'
-Metal Lab — local macOS compute challenges
-  ./metal-lab list                  Show all upstream IDs
-  ./metal-lab show ID               Read the problem in the terminal
-  ./metal-lab doctor                Check the local compiler and GPU
-  ./metal-lab setup                 Install catalog dependencies once
-  ./metal-lab check [ID|all]        Run correctness cases (default: all)
-  ./metal-lab smoke [ID|all]        Run examples across the course
-  ./metal-lab practice ID           Create an editable practice file
-  ./metal-lab check ID practice     Check your own implementation
-  ./metal-lab bench ID              Warm up, validate, then time locally
-  ./metal-lab bench ID --performance   Use upstream size (lessons 7 onward)
+Meto — local macOS compute challenges
+  ./meto list                  Show all upstream IDs
+  ./meto show ID               Read the problem in the terminal
+  ./meto doctor                Check the local compiler and GPU
+  ./meto setup                 Install catalog dependencies once
+  ./meto check [ID|all]        Run correctness cases (default: all)
+  ./meto smoke [ID|all]        Run examples across the course
+  ./meto practice ID           Create an editable practice file
+  ./meto check ID practice     Check your own implementation
+  ./meto bench ID              Warm up, validate, then time locally
+  ./meto bench ID --performance   Use upstream size (lessons 7 onward)
 HELP
         ;;
-    *) echo "Unknown command. Run ./metal-lab help." >&2; exit 2 ;;
+    *) echo "Unknown command. Run ./meto help." >&2; exit 2 ;;
 esac
