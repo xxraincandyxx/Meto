@@ -6,7 +6,7 @@ This run used an eight-core Apple M3 GPU, macOS 27.0.1, Python 3.13.12 and PyTor
 
 ## Reproduce from VS Code
 
-After running `./metal-lab setup`, use the integrated terminal. The first command runs all 44 bounded workloads. Pass individual IDs to shorten a run. The second command times the alternative implementations listed below.
+After running `./meto setup`, use the integrated terminal. The first command runs all 44 bounded workloads. Pass individual IDs to shorten a run. The second command times the alternative implementations listed below.
 
 ```sh
 .build/catalog-env/bin/python Tools/benchmark_fundamentals.py

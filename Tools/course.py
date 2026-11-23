@@ -73,12 +73,12 @@ def main():
             print(f"{number:02}  {title(path)}")
         return
     if args.id not in lessons:
-        parser.error("Choose a lesson ID from ./metal-lab list.")
+        parser.error("Choose a lesson ID from ./meto list.")
     path = lessons[args.id]
     folder = lesson_folder(args.id, path)
     if args.action == "practice":
         practice(folder)
-        print(f"Run ./metal-lab check {args.id} practice")
+        print(f"Run ./meto check {args.id} practice")
         return
     statement = Statement()
     statement.feed(path.with_name("challenge.html").read_text())
@@ -86,7 +86,7 @@ def main():
     print(textwrap.fill(" ".join("".join(statement.intro).split()), width=86))
     print(f"\nProblem and examples  {path.with_name('challenge.html').relative_to(ROOT)}")
     print(f"Lesson files          {folder.relative_to(ROOT)}")
-    print(f"Check the solution    ./metal-lab check {args.id}")
+    print(f"Check the solution    ./meto check {args.id}")
 
 
 if __name__ == "__main__":

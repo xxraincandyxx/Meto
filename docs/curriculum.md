@@ -1,8 +1,8 @@
 # Curriculum
 
-Read a prompt from the integrated terminal with `./metal-lab show ID`. Follow the solution link to see the dispatch and the algorithm. A shader link opens the Metal Shading Language code used by that lesson. IDs match the pinned reference.
+Read a prompt from the integrated terminal with `./meto show ID`. Follow the solution link to see the dispatch and the algorithm. A shader link opens the Metal Shading Language code used by that lesson. IDs match the pinned reference.
 
-The last column records one verified run on an 8-core Apple M3 using the default local benchmark shape for each lesson. Lessons 1–6 report GPU command-buffer time. The remaining lessons include host dispatch and synchronization. Reproduce a row with `./metal-lab bench ID` to see its exact shape, or time the course with `./metal-lab bench all`.
+The last column records one verified run on an 8-core Apple M3 using the default local benchmark shape for each lesson. Lessons 1–6 report GPU command-buffer time. The remaining lessons include host dispatch and synchronization. Reproduce a row with `./meto bench ID` to see its exact shape, or time the course with `./meto bench all`.
 
 ## 01–06 · Native Metal foundations
 

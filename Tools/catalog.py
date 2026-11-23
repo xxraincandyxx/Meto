@@ -124,7 +124,7 @@ def main():
     elif args.id.isdigit() and int(args.id) in lessons:
         selected = [lessons[int(args.id)]]
     else:
-        raise ValueError(f"Unknown lesson {args.id!r}. See ./metal-lab list")
+        raise ValueError(f"Unknown lesson {args.id!r}. See ./meto list")
     failures = 0
     with torch.inference_mode():
         for path in selected:

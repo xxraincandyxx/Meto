@@ -13,9 +13,9 @@ Measurements used the 8-core Apple M3 GPU on macOS 27.0.1 with PyTorch 2.15.0. T
 Run the same inputs from the VS Code terminal:
 
 ```sh
-./metal-lab bench 60 --performance
-./metal-lab bench 82 --performance
-./metal-lab bench 101 --performance
+./meto bench 60 --performance
+./meto bench 82 --performance
+./meto bench 101 --performance
 ```
 
 ## Two changes tested on the same GPU

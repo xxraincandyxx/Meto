@@ -1,6 +1,6 @@
 # From a vector sum to attention
 
-Start each lab with `./metal-lab show ID` and `./metal-lab practice ID`. The practice file starts with the baseline's argument list and launch geometry. For experiments that change how many values a thread owns, change the matching dispatch in the lesson's Swift file as well. Keep the baseline available for comparison.
+Start each lab with `./meto show ID` and `./meto practice ID`. The practice file starts with the baseline's argument list and launch geometry. For experiments that change how many values a thread owns, change the matching dispatch in the lesson's Swift file as well. Keep the baseline available for comparison.
 
 ### Follow one dispatch from Swift to the GPU
 
@@ -38,7 +38,7 @@ Each query needs a weighted average of the value rows. The baseline materializes
 
 ## Measurements on the course Mac
 
-The 8-core M3 ran each shape twice to warm up, then the runner took the median GPU command-buffer duration across 15 samples. These values come from one complete pass of `./metal-lab bench all`. Compare changes on the same device and shape. Vector addition gained 1.06× on this run. Vectorization still requires the same two reads and one write per element.
+The 8-core M3 ran each shape twice to warm up, then the runner took the median GPU command-buffer duration across 15 samples. These values come from one complete pass of `./meto bench all`. Compare changes on the same device and shape. Vector addition gained 1.06× on this run. Vectorization still requires the same two reads and one write per element.
 
 | ID | Shape | Baseline (ms) | Solution (ms) | Baseline / solution |
 |---:|---|---:|---:|---:|

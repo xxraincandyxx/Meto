@@ -25,7 +25,7 @@ In **150 (distillation KL)**, one threadgroup owns a vocabulary row. Its first p
 
 ## Repeat the measurements
 
-From the repository root after `./metal-lab setup`, run the following in the VS Code terminal.
+From the repository root after `./meto setup`, run the following in the VS Code terminal.
 
 ```sh
 .build/catalog-env/bin/python Tools/compare_loss_fusion.py

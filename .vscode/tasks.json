@@ -2,9 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Metal Lab: Check solution",
+      "label": "Meto: Check solution",
       "type": "process",
-      "command": "${workspaceFolder}/metal-lab",
+      "command": "${workspaceFolder}/meto",
       "args": [
         "check",
         "${input:lesson}"
@@ -19,9 +19,9 @@
       }
     },
     {
-      "label": "Metal Lab: Read problem",
+      "label": "Meto: Read problem",
       "type": "process",
-      "command": "${workspaceFolder}/metal-lab",
+      "command": "${workspaceFolder}/meto",
       "args": [
         "show",
         "${input:lesson}"
@@ -32,9 +32,9 @@
       "problemMatcher": []
     },
     {
-      "label": "Metal Lab: Create practice copy",
+      "label": "Meto: Create practice copy",
       "type": "process",
-      "command": "${workspaceFolder}/metal-lab",
+      "command": "${workspaceFolder}/meto",
       "args": [
         "practice",
         "${input:lesson}"
@@ -45,9 +45,9 @@
       "problemMatcher": []
     },
     {
-      "label": "Metal Lab: Check practice",
+      "label": "Meto: Check practice",
       "type": "process",
-      "command": "${workspaceFolder}/metal-lab",
+      "command": "${workspaceFolder}/meto",
       "args": [
         "check",
         "${input:lesson}",
@@ -59,9 +59,9 @@
       "problemMatcher": []
     },
     {
-      "label": "Metal Lab: Benchmark solution",
+      "label": "Meto: Benchmark solution",
       "type": "process",
-      "command": "${workspaceFolder}/metal-lab",
+      "command": "${workspaceFolder}/meto",
       "args": [
         "bench",
         "${input:lesson}"
@@ -72,9 +72,9 @@
       "problemMatcher": []
     },
     {
-      "label": "Metal Lab: Benchmark practice",
+      "label": "Meto: Benchmark practice",
       "type": "process",
-      "command": "${workspaceFolder}/metal-lab",
+      "command": "${workspaceFolder}/meto",
       "args": [
         "bench",
         "${input:lesson}",
@@ -86,9 +86,9 @@
       "problemMatcher": []
     },
     {
-      "label": "Metal Lab: Check all lessons",
+      "label": "Meto: Check all lessons",
       "type": "process",
-      "command": "${workspaceFolder}/metal-lab",
+      "command": "${workspaceFolder}/meto",
       "args": [
         "check",
         "all"
@@ -99,9 +99,9 @@
       "problemMatcher": []
     },
     {
-      "label": "Metal Lab: List lessons",
+      "label": "Meto: List lessons",
       "type": "process",
-      "command": "${workspaceFolder}/metal-lab",
+      "command": "${workspaceFolder}/meto",
       "args": [
         "list"
       ],
@@ -111,9 +111,9 @@
       "problemMatcher": []
     },
     {
-      "label": "Metal Lab: Check environment",
+      "label": "Meto: Check environment",
       "type": "process",
-      "command": "${workspaceFolder}/metal-lab",
+      "command": "${workspaceFolder}/meto",
       "args": [
         "doctor"
       ],
@@ -123,9 +123,9 @@
       "problemMatcher": []
     },
     {
-      "label": "Metal Lab: Set up full catalog",
+      "label": "Meto: Set up full catalog",
       "type": "process",
-      "command": "${workspaceFolder}/metal-lab",
+      "command": "${workspaceFolder}/meto",
       "args": [
         "setup"
       ],
@@ -139,7 +139,7 @@
     {
       "id": "lesson",
       "type": "promptString",
-      "description": "LeetGPU lesson ID (use Metal Lab: List lessons for the index)",
+      "description": "LeetGPU lesson ID (use Meto: List lessons for the index)",
       "default": "01"
     }
   ]

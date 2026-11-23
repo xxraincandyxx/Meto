@@ -3,9 +3,9 @@ import Metal
 
 let lessons: [Lesson] = [vectorAdd, matrixMultiplication, matrixTranspose, reduction, softmax, attention]
 let usage = """
-Usage: ./metal-lab list | doctor | check [all|ID] [solution|baseline|practice]
-       ./metal-lab bench ID [solution|baseline|practice] | practice ID
-IDs follow the course order. For example: ./metal-lab check 01
+Usage: ./meto list | doctor | check [all|ID] [solution|baseline|practice]
+       ./meto bench ID [solution|baseline|practice] | practice ID
+IDs follow the course order. For example: ./meto check 01
 Bench compares baseline and solution by default. Practice creates an editable baseline.
 """
 
@@ -29,7 +29,7 @@ func check(_ output: MTLBuffer, expected: [Float], id: String) throws {
 func exercise(_ lesson: Lesson, gpu: GPU, variant: String, timed: Bool) throws -> Double {
     let path = "lessons/\(lesson.folder)/\(variant).metal"
     guard FileManager.default.fileExists(atPath: path) else {
-        throw LabError("Missing \(path). Create a practice file with ./metal-lab practice \(lesson.id).")
+        throw LabError("Missing \(path). Create a practice file with ./meto practice \(lesson.id).")
     }
     let program = try Program(gpu, path: path)
     var median = 0.0
@@ -77,7 +77,7 @@ func main() throws {
     guard ["practice", "check", "bench"].contains(action), args.count <= 3 else { throw LabError(usage) }
     let selector = args.count > 1 ? args[1] : "all"
     let selected = lessons.filter { ($0.id == selector || Int($0.id) == Int(selector)) || (["check", "bench"].contains(action) && selector == "all") }
-    guard !selected.isEmpty else { throw LabError("Choose a lesson with ./metal-lab list.\n" + usage) }
+    guard !selected.isEmpty else { throw LabError("Choose a lesson with ./meto list.\n" + usage) }
     if action == "practice" {
         guard args.count == 2 else { throw LabError(usage) }
         let folder = "lessons/" + selected[0].folder
@@ -85,7 +85,7 @@ func main() throws {
         if !FileManager.default.fileExists(atPath: path) {
             try FileManager.default.copyItem(atPath: folder + "/baseline.metal", toPath: path)
         }
-        print("Edit \(path), then run ./metal-lab check \(selected[0].id) practice")
+        print("Edit \(path), then run ./meto check \(selected[0].id) practice")
         return
     }
     let variants = args.count == 3 ? [args[2]] : (action == "bench" ? ["baseline", "solution"] : ["solution"])
@@ -101,6 +101,6 @@ func main() throws {
 }
 
 do { try main() } catch {
-    FileHandle.standardError.write(Data("Metal Lab: \(error)\n".utf8))
+    FileHandle.standardError.write(Data("Meto: \(error)\n".utf8))
     exit(1)
 }
