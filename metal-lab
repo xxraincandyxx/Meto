@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+cd "$(dirname "$0")"
+if [ "$(uname -s)" != Darwin ]; then
+    echo "Metal Lab requires macOS with a Metal-capable GPU." >&2
+    exit 1
+fi
+if ! xcrun --find swiftc >/dev/null 2>&1; then
+    echo "Install Apple's Command Line Tools with xcode-select --install, then retry." >&2
+    exit 1
+fi
+# A native release build keeps CPU setup cheap. Make rebuilds only after Swift edits.
+# The runner reads shader source on launch, so kernel edits are always picked up.
+make -s .build/metal-lab
+exec .build/metal-lab "$@"
