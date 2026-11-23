@@ -45,7 +45,12 @@ case "${1:-help}" in
             all)
                 case "$1" in
                     check|smoke) native check all "${3:-solution}"; catalog "$@" ;;
-                    bench) native bench all; catalog "$@" ;;
+                    bench)
+                        case "${3:-}" in
+                            ""|--performance) native bench all ;;
+                            *) native bench all "$3" ;;
+                        esac
+                        catalog "$@" ;;
                 esac ;;
             1|01|2|02|3|03|4|04|5|05|6|06)
                 if [ "$1" = smoke ]; then shift; native check "$@"; else native "$@"; fi ;;
