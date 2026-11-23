@@ -1,9 +1,8 @@
-import torch.nn.functional as F
+from catalog.metal_shader import kernel
 
 
 def solve(teacher_logits, student_logits, kl, N, V, temperature):
-    # Log-softmax uses a row maximum before exponentiation. Keeping the
-    # student's probabilities in log space avoids taking log(0) at extremes.
-    teacher = F.log_softmax(teacher_logits / temperature, dim=1)
-    student = F.log_softmax(student_logits / temperature, dim=1)
-    kl.copy_((teacher.exp() * (teacher - student)).sum(dim=1))
+    # Each group streams a vocabulary row twice and stores one scalar.
+    # Recomputing scaled logits avoids materializing several full-size tensors.
+    kernel(__file__, "divergence")(teacher_logits, student_logits, kl, V,
+                                   1 / temperature, threads=N * 256, group_size=256)

@@ -7,6 +7,7 @@ def solve(rewards, values, advantages, gamma, lam, B, S):
     # full series is long and the batch contains only a few trajectories.
     chunks = (S + 63) // 64
     totals = torch.empty((B, chunks), device=values.device)
+    gamma = float(gamma)  # Metal binds scalar arguments by their byte representation.
     decay = gamma * lam
     kernel(__file__, "local_scan")(rewards, values, advantages, totals, S, chunks,
                                    gamma, decay, threads=B * chunks)

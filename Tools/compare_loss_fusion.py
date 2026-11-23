@@ -1,10 +1,14 @@
 """Measure four fused loss kernels against the pinned eager MPS formulas."""
+import os
 from pathlib import Path
 import statistics
+import sys
 import time
 
 import torch
-import catalog as lab
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from Tools import catalog as lab
 
 
 def compare(number):
@@ -21,7 +25,7 @@ def compare(number):
     args = {key: value.to("mps") if isinstance(value, torch.Tensor) else value
             for key, value in case.items()}
     output = next(key for key, (_, mode) in problem.get_solve_signature().items() if mode == "out")
-    optimized = lab.load(Path("catalog") / path.parent.name / "solution.py").solve
+    optimized = lab.load(lab.ROOT / "catalog" / path.parent.name / "solution.py").solve
     functions = (problem.reference_impl, optimized)
     problem.reference_impl(**case)
     times = ([], [])
@@ -42,6 +46,10 @@ def compare(number):
 
 
 if __name__ == "__main__":
+    if not torch.backends.mps.is_available():
+        raise SystemExit("Run on a Mac with an available Metal device.")
+    if os.getenv("PYTORCH_ENABLE_MPS_FALLBACK") == "1":
+        raise SystemExit("Unset PYTORCH_ENABLE_MPS_FALLBACK to time GPU operations.")
     torch.manual_seed(2026)
     with torch.inference_mode():
         for number in (107, 108, 109, 150):
