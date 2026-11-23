@@ -22,10 +22,12 @@ kernel void solve(
         return;
     }
     uint bits = pcg(pcg(as_type<uint>(seed[0])) + uint(indices[i]));
-    // Evaluate -log(u) via log1p near 1. Counting the distance to UINT_MAX
+    // Evaluate -log(1 - distance) by its first two Taylor terms near 1.
+    // Counting the distance to UINT_MAX
     // prevents a near-one sample from rounding to exactly one in float32.
-    float clock = bits >= 0x80000000u
-        ? -log1p(-(float(0xffffffffu - bits) + 0.5f) * 0x1p-32f)
+    float distance = (float(0xffffffffu - bits) + 0.5f) * 0x1p-32f;
+    float clock = distance < 0.0001f
+        ? distance * (1.0f + 0.5f * distance)
         : -log((float(bits) + 0.5f) * 0x1p-32f);
     score[i] = probabilities[i] / clock;
 }
