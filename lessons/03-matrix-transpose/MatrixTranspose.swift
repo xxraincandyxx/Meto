@@ -7,5 +7,5 @@ let matrixTranspose = Lesson(folder: "03-matrix-transpose", title: "Matrix trans
         let tile = optimized ? 32 : 16
         return [Pass("transpose", inputs + [output], shape,
                      groups: size(ceilDiv(shape[1], tile), ceilDiv(shape[0], tile)),
-                     threads: optimized ? size(32, 8) : size(16, 16))]
+                     threads: optimized ? size(8, 8) : size(16, 16))]
     })

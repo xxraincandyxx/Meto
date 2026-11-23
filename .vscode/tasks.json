@@ -1,0 +1,146 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Metal Lab: Check solution",
+      "type": "process",
+      "command": "${workspaceFolder}/metal-lab",
+      "args": [
+        "check",
+        "${input:lesson}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Metal Lab: Read problem",
+      "type": "process",
+      "command": "${workspaceFolder}/metal-lab",
+      "args": [
+        "show",
+        "${input:lesson}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Metal Lab: Create practice copy",
+      "type": "process",
+      "command": "${workspaceFolder}/metal-lab",
+      "args": [
+        "practice",
+        "${input:lesson}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Metal Lab: Check practice",
+      "type": "process",
+      "command": "${workspaceFolder}/metal-lab",
+      "args": [
+        "check",
+        "${input:lesson}",
+        "practice"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Metal Lab: Benchmark solution",
+      "type": "process",
+      "command": "${workspaceFolder}/metal-lab",
+      "args": [
+        "bench",
+        "${input:lesson}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Metal Lab: Benchmark practice",
+      "type": "process",
+      "command": "${workspaceFolder}/metal-lab",
+      "args": [
+        "bench",
+        "${input:lesson}",
+        "practice"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Metal Lab: Check all lessons",
+      "type": "process",
+      "command": "${workspaceFolder}/metal-lab",
+      "args": [
+        "check",
+        "all"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Metal Lab: List lessons",
+      "type": "process",
+      "command": "${workspaceFolder}/metal-lab",
+      "args": [
+        "list"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Metal Lab: Check environment",
+      "type": "process",
+      "command": "${workspaceFolder}/metal-lab",
+      "args": [
+        "doctor"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Metal Lab: Set up full catalog",
+      "type": "process",
+      "command": "${workspaceFolder}/metal-lab",
+      "args": [
+        "setup"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "lesson",
+      "type": "promptString",
+      "description": "LeetGPU lesson ID (use Metal Lab: List lessons for the index)",
+      "default": "01"
+    }
+  ]
+}

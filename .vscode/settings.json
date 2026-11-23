@@ -1,0 +1,13 @@
+{
+  "files.associations": {
+    "*.metal": "cpp"
+  },
+  "files.watcherExclude": {
+    "**/.build/**": true,
+    "**/reference/leetgpu-challenges/.git/**": true
+  },
+  "search.exclude": {
+    "**/.build": true
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/.build/catalog-env/bin/python"
+}

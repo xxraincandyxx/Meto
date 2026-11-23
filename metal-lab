@@ -5,11 +5,65 @@ if [ "$(uname -s)" != Darwin ]; then
     echo "Metal Lab requires macOS with a Metal-capable GPU." >&2
     exit 1
 fi
-if ! xcrun --find swiftc >/dev/null 2>&1; then
-    echo "Install Apple's Command Line Tools with xcode-select --install, then retry." >&2
-    exit 1
+
+if [ "${1:-}" = setup ]; then
+    git submodule update --init
+    if command -v uv >/dev/null 2>&1; then
+        uv venv --allow-existing --python 3.13 .build/catalog-env
+        uv pip install --python .build/catalog-env/bin/python -r Tools/requirements.txt
+    else
+        "${PYTHON:-python3.13}" -m venv .build/catalog-env
+        .build/catalog-env/bin/python -m pip install -r Tools/requirements.txt
+    fi
+    exec ./metal-lab doctor
 fi
-# A native release build keeps CPU setup cheap. Make rebuilds only after Swift edits.
-# The runner reads shader source on launch, so kernel edits are always picked up.
-make -s .build/metal-lab
-exec .build/metal-lab "$@"
+
+native() {
+    if ! xcrun --find swiftc >/dev/null 2>&1; then
+        echo "Install Apple's Command Line Tools with xcode-select --install, then retry." >&2
+        exit 1
+    fi
+    make -s .build/metal-lab
+    .build/metal-lab "$@"
+}
+catalog() {
+    if [ ! -x .build/catalog-env/bin/python ]; then
+        echo "Run ./metal-lab setup once to prepare the extended catalog." >&2
+        exit 1
+    fi
+    .build/catalog-env/bin/python Tools/catalog.py "$@"
+}
+
+case "${1:-help}" in
+    list|show|practice) exec /usr/bin/python3 Tools/course.py "$@" ;;
+    check|smoke|bench)
+        case "${2:-all}" in
+            all)
+                case "$1" in
+                    check|smoke) native check all "${3:-solution}"; catalog "$@" ;;
+                    *) echo "Choose a lesson ID with ./metal-lab list." >&2; exit 2 ;;
+                esac ;;
+            1|01|2|02|3|03|4|04|5|05|6|06)
+                if [ "$1" = smoke ]; then shift; native check "$@"; else native "$@"; fi ;;
+            *) catalog "$@" ;;
+        esac ;;
+    doctor) native doctor
+        if [ -x .build/catalog-env/bin/python ]; then
+            .build/catalog-env/bin/python -c 'import torch; print(f"Catalog backend: PyTorch {torch.__version__}, MPS available: {torch.backends.mps.is_available()}"); raise SystemExit(not torch.backends.mps.is_available())'
+        fi ;;
+    help|--help|-h) cat <<'HELP'
+Metal Lab — local macOS compute challenges
+  ./metal-lab list                  Show all upstream IDs
+  ./metal-lab show ID               Read the problem in the terminal
+  ./metal-lab doctor                Check the local compiler and GPU
+  ./metal-lab setup                 Install catalog dependencies once
+  ./metal-lab check [ID|all]        Run correctness cases (default: all)
+  ./metal-lab smoke [ID|all]        Run examples across the course
+  ./metal-lab practice ID           Create an editable practice file
+  ./metal-lab check ID practice     Check your own implementation
+  ./metal-lab bench ID              Warm up, validate, then time locally
+  ./metal-lab bench ID --performance   Use upstream size (lessons 7 onward)
+HELP
+        ;;
+    *) echo "Unknown command. Run ./metal-lab help." >&2; exit 2 ;;
+esac
