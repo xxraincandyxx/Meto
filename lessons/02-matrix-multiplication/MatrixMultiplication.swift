@@ -10,7 +10,12 @@ let matrixMultiplication = Lesson(folder: "02-matrix-multiplication", title: "Ma
             }
         }
         return Example(inputs: [a,b], expected: c)
-    }, plan: { _, optimized, inputs, output, shape in
+    }, plan: { program, optimized, inputs, output, shape in
+        if optimized, shape[0] % 32 == 0, shape[1] % 8 == 0, shape[2] % 32 == 0 {
+            let width = try program.pipeline("multiplyFragments").threadExecutionWidth
+            return [Pass("multiplyFragments", inputs + [output], shape,
+                         groups: size(shape[2]/32, shape[0]/32), threads: size(4*width))]
+        }
         let tile = optimized ? 32 : 16
         return [Pass("multiply", inputs + [output], shape,
                      groups: size(ceilDiv(shape[2], tile), ceilDiv(shape[0], tile)),

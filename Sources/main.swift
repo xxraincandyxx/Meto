@@ -76,7 +76,7 @@ func main() throws {
     }
     guard ["practice", "check", "bench"].contains(action), args.count <= 3 else { throw LabError(usage) }
     let selector = args.count > 1 ? args[1] : "all"
-    let selected = lessons.filter { ($0.id == selector || Int($0.id) == Int(selector)) || (action == "check" && selector == "all") }
+    let selected = lessons.filter { ($0.id == selector || Int($0.id) == Int(selector)) || (["check", "bench"].contains(action) && selector == "all") }
     guard !selected.isEmpty else { throw LabError("Choose a lesson with ./metal-lab list.\n" + usage) }
     if action == "practice" {
         guard args.count == 2 else { throw LabError(usage) }

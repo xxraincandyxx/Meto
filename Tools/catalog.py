@@ -7,6 +7,8 @@ import statistics
 import sys
 import time
 
+import torch
+
 from course import ROOT, entries
 # Let lessons import common GPU helpers even when launched from VS Code.
 sys.path.insert(0, str(ROOT))
@@ -39,8 +41,8 @@ def validate(solve, challenge, case):
     if not outputs:
         raise RuntimeError("Missing output declaration in reference signature.")
     for key in outputs:
-        # Unused expert capacity retains its initial
-        # values. Other pure outputs get a sentinel to expose missed writes.
+        # Unused expert capacity keeps its initial values. Poison other pure
+        # outputs so a forgotten write cannot pass on a zero-filled allocation.
         partial = (challenge.name, key) == ("MoE Token Dispatch", "dispatched_x")
         if signature[key][1] == "out" and not partial:
             gpu[key].fill_(float("nan") if gpu[key].is_floating_point() else 11)
@@ -49,9 +51,10 @@ def validate(solve, challenge, case):
     torch.mps.synchronize()
     for key in outputs:
         actual, expected = gpu[key].cpu(), cpu[key]
-        torch.testing.assert_close(actual, expected, atol=challenge.atol, rtol=challenge.rtol,
+        approximate = expected.is_floating_point() or expected.is_complex()
+        torch.testing.assert_close(actual, expected, atol=challenge.atol if approximate else 0,
+                                   rtol=challenge.rtol if approximate else 0,
                                    msg=lambda detail: f"{key}: {detail}")
-    return gpu
 
 
 def exercise(path, args):
@@ -60,18 +63,29 @@ def exercise(path, args):
     torch.manual_seed(2026)
     challenge = load(path).Challenge()
     solve = load(source).solve
-    cases = [challenge.generate_example_test()]
-    if args.action == "check":
-        cases.extend(challenge.generate_functional_test())
     if args.action == "bench" and args.performance:
-        cases = [challenge.generate_performance_test()]
-    for i, case in enumerate(cases):
+        cases = [("upstream performance", challenge.generate_performance_test())]
+    else:
+        cases = [("example", challenge.generate_example_test())]
+        if args.action in ("check", "bench"):
+            for index, case in enumerate(challenge.generate_functional_test(), start=1):
+                cases.append((f"functional {index}", case))
+        if args.action == "bench":
+            # Small public fixtures can mostly measure launch overhead. Pick the
+            # largest bounded fixture; prefer the smaller one if none fits.
+            def footprint(entry):
+                return sum(t.numel() * t.element_size() for t in entry[1].values()
+                           if isinstance(t, torch.Tensor))
+
+            bounded = [entry for entry in cases if footprint(entry) <= 32 * 1024**2]
+            cases = [max(bounded, key=footprint) if bounded else min(cases, key=footprint)]
+    for label, case in cases:
         try:
             validate(solve, challenge, case)
         except Exception as exc:
-            raise RuntimeError(f"case {i} ({'example' if i == 0 else 'functional'}): {exc}") from exc
+            raise RuntimeError(f"{label}: {exc}") from exc
     if args.action == "bench":
-        case = cases[0]
+        label, case = cases[0]
         gpu = prepare(case, "mps")
         # Restore mutated buffers before each run. Otherwise e.g. an in-place sort
         # would measure an already-sorted input after the first iteration.
@@ -79,7 +93,7 @@ def exercise(path, args):
                     if mode == "inout"}
         times = []
         shapes = ", ".join(f"{k}={tuple(v.shape)}" for k, v in gpu.items() if isinstance(v, torch.Tensor))
-        print("  " + shapes)
+        print(f"  {label}  {shapes}")
         for i in range(17):
             for key, value in original.items():
                 gpu[key].copy_(value)
@@ -101,13 +115,11 @@ def main():
     parser.add_argument("--performance", action="store_true", help="use upstream performance workload")
     args = parser.parse_args()
     lessons = entries()
-    global torch
-    import torch
     if not torch.backends.mps.is_available():
         raise RuntimeError("Metal is unavailable to PyTorch. Run locally on a supported Mac with GPU access.")
     if os.environ.get("PYTORCH_ENABLE_MPS_FALLBACK") == "1":
         raise RuntimeError("Unset PYTORCH_ENABLE_MPS_FALLBACK to run checks entirely on Metal.")
-    if args.id == "all" and args.action in ("check", "smoke"):
+    if args.id == "all":
         selected = [p for i, p in lessons.items() if i > 6]
     elif args.id.isdigit() and int(args.id) in lessons:
         selected = [lessons[int(args.id)]]
