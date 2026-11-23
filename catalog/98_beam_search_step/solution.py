@@ -1,6 +1,3 @@
-import torch
-
-
 def solve(beam_scores, token_logprobs, new_beam_scores, parent_beam_indices, next_tokens, B, K, V):
     # Each beam can contribute at most K survivors to the global top K.
     # Prune locally before adding beam scores. The second top-k compares

@@ -9,4 +9,4 @@ def solve(Q, K_idx, qjl_signs, gamma, Pi, S_mat, codebook, scores, B, S, D, C):
     centroids = codebook[K_idx.long()]
     coarse = (Q @ Pi.T) @ centroids.T
     correction = (Q @ S_mat.T) @ qjl_signs.float().T
-    torch.addcmul(coarse, correction, gamma, value=math.sqrt(math.pi/2) / D, out=scores)
+    torch.addcmul(coarse, correction, gamma, value=math.sqrt(math.pi / 2) / D, out=scores)

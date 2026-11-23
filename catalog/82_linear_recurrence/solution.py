@@ -14,8 +14,18 @@ def scan(a, x, h):
     block_gain = x.new_empty(batch, blocks)
     block_bias = x.new_empty(batch, blocks)
     ends = x.new_empty(batch, blocks)
-    kernel(__file__, "tiles")(a, x, h, gain, block_gain, block_bias, length, blocks,
-                              threads=batch * blocks * 32, group_size=32)
+    kernel(__file__, "tiles")(
+        a,
+        x,
+        h,
+        gain,
+        block_gain,
+        block_bias,
+        length,
+        blocks,
+        threads=batch * blocks * 32,
+        group_size=32,
+    )
     # Scan the summaries with the same associative operator. Each level has
     # 32 times fewer elements, so the recursion stays shallow for long rows.
     scan(block_gain, block_bias, ends)

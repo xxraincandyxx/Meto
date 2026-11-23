@@ -2,7 +2,19 @@ import torch
 import torch.nn.functional as F
 
 
-def solve(Q, K_prefix, V_prefix, K_suffix, V_suffix, output, batch_size, num_heads, prefix_len, suffix_len, head_dim):
+def solve(
+    Q,
+    K_prefix,
+    V_prefix,
+    K_suffix,
+    V_suffix,
+    output,
+    batch_size,
+    num_heads,
+    prefix_len,
+    suffix_len,
+    head_dim,
+):
     # The suffix uses causal positions offset by the length of the shared
     # prefix. Build one mask for all heads and requests, then submit a
     # batched attention operation. Prefix expansion itself is a stride-zero view.

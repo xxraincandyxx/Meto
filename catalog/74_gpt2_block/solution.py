@@ -7,9 +7,10 @@ def solve(x, output, weights, seq_len):
     # input-by-output layout used by the four projections in this block.
     d, heads, wide = 768, 12, 3072
     n1, b1, qkv, qb, proj, pb, n2, b2, up, ub, down, db = weights.split(
-        [d, d, d*3*d, 3*d, d*d, d, d, d, d*wide, wide, wide*d, d])
+        [d, d, d * 3 * d, 3 * d, d * d, d, d, d, d * wide, wide, wide * d, d]
+    )
     z = F.layer_norm(x, (d,), n1, b1)
-    components = torch.addmm(qb, z, qkv.view(d, 3*d)).view(seq_len, 3, heads, d//heads)
+    components = torch.addmm(qb, z, qkv.view(d, 3 * d)).view(seq_len, 3, heads, d // heads)
     q, k, v = components.permute(1, 2, 0, 3).unbind(0)
     # This exercise specifies bidirectional attention. The sequence dimension
     # sits immediately before the feature dimension in the SDPA call.

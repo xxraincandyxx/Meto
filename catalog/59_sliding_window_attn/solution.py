@@ -11,7 +11,11 @@ def solve(Q, K, V, output, M, d, window_size):
         end = min(start + 128, M)
         left, right = max(0, start - window_size), min(M, end + window_size)
         allowed = (positions[start:end, None] - positions[None, left:right]).abs() <= window_size
-        output[start:end].copy_(F.scaled_dot_product_attention(
-            Q[None, None, start:end], K[None, None, left:right], V[None, None, left:right],
-            attn_mask=allowed
-        )[0, 0])
+        output[start:end].copy_(
+            F.scaled_dot_product_attention(
+                Q[None, None, start:end],
+                K[None, None, left:right],
+                V[None, None, left:right],
+                attn_mask=allowed,
+            )[0, 0]
+        )
