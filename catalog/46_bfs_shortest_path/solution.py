@@ -8,6 +8,16 @@ from catalog.metal_shader import kernel
 def solve(grid, result, rows, cols, start_row, start_col, end_row, end_col):
     source = start_row * cols + start_col
     target = end_row * cols + end_col
+    if rows * cols <= 4096:
+        kernel(__file__, "local_bfs")(grid, result, rows, cols, source, target, threads=128, group_size=128)
+        return
+    device_frontiers(grid, result, rows, cols, source, target)
+
+
+def device_frontiers(grid, result, rows, cols, source, target):
+    if source == target:
+        result.zero_()
+        return
     distance = torch.full_like(grid, -1)
     distance[source] = 0
     frontier = torch.empty_like(grid)

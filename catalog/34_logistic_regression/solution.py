@@ -2,8 +2,18 @@
 
 import torch
 
+from catalog.metal_shader import kernel
+
 
 def solve(X, y, beta, n_samples, n_features):
+    if n_samples <= 256 and n_features <= 8:
+        kernel(__file__, "small_newton")(X, y, beta, n_samples, n_features, threads=64, group_size=64)
+        return
+
+    general_newton(X, y, beta, n_samples, n_features)
+
+
+def general_newton(X, y, beta, n_samples, n_features):
     beta.zero_()
     ridge = 1e-6
     identity = torch.eye(n_features, device=X.device, dtype=X.dtype)

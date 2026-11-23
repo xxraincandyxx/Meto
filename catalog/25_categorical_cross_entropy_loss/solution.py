@@ -2,9 +2,14 @@
 
 import torch
 
+from catalog.metal_shader import kernel
+
 
 def solve(logits, true_labels, loss, N, C):
-    # For each row, subtracting its maximum inside log-softmax keeps exp bounded.
-    # The cross-entropy primitive selects the one true class per row and reduces
-    # those losses. Labels stay on the GPU throughout; no scalar reads per example.
-    loss.copy_(torch.nn.functional.cross_entropy(logits, true_labels.long(), reduction="mean"))
+    run = kernel(__file__, "row_loss")
+    width = run.thread_execution_width
+    rows = torch.empty(N, device=logits.device, dtype=logits.dtype)
+    run(logits, true_labels, rows, C, threads=N * width, group_size=width)
+    # Only one number per sample reaches the second reduction. The full
+    # N-by-C matrix of log probabilities never touches device memory.
+    torch.mean(rows, dim=0, out=loss.view(()))
